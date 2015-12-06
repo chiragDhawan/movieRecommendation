@@ -1,0 +1,61 @@
+#This code will convert all the genres into seperate columns and will give 1 or 0 depending on whether
+#a particular genre is present or not
+# It will create a seperate CSV file which is named movieWithGenre
+
+##############################################################
+
+# This file converts the genre associated with the movies into columns
+
+#############################################################
+
+
+# With file.choose() function one gets a dialogue box from where one select the file
+movies<-read.csv(file.choose())
+
+# To get summaries of the data
+str(movies)
+summary(movies)
+
+
+
+#####create a dataframe having the the columns of movies
+
+
+movi<-data.frame(movieId=movies$movieId,
+                 title=movies$title,genres=as.character(movies$genres))
+                 
+
+
+
+
+#####To convert each of the genre to seperate column
+
+movi$Adventure<-ifelse(grepl("Adventure",movies$genres),1,0)
+movi$Animation<-ifelse(grepl("Animation",movies$genres),1,0)
+movi$Action<-ifelse(grepl("Action",movies$genres),1,0)
+movi$Children<-ifelse(grepl("Children",movies$genres),1,0)
+movi$Comedy<-ifelse(grepl("Comedy",movies$genres),1,0)
+movi$Crime<-ifelse(grepl("Crime",movies$genres),1,0)
+movi$Documentary<-ifelse(grepl("Documentary",movies$genres),1,0)
+movi$Drama<-ifelse(grepl("Drama",movies$genres),1,0)
+movi$Horror<-ifelse(grepl("Horror",movies$genres),1,0)
+movi$Musical<-ifelse(grepl("Musical",movies$genres),1,0)
+movi$Mystery<-ifelse(grepl("Mystery",movies$genres),1,0)
+movi$Romance<-ifelse(grepl("Romance",movies$genres),1,0)
+movi$Thriller<-ifelse(grepl("Thriller",movies$genres),1,0)
+movi$FilmNoir<-ifelse(grepl("Film",movies$genres),1,0)
+movi$SciFi<-ifelse(grepl("Sci",movies$genres),1,0)
+movi$War<-ifelse(grepl("War",movies$genres),1,0)
+movi$Western<-ifelse(grepl("Western",movies$genres),1,0)
+
+movi$Fantasy<-ifelse(grepl("Fantasy",movies$genres),1,0)
+
+movi$nogenreslisted<-ifelse(grepl("listed",movies$genres),1,0)
+
+
+#################################
+
+write.csv(movieWithGenre, "D:/DataMining")
+
+
+
