@@ -1,0 +1,7 @@
+########################################
+
+### This file gives value 0 to the tag columns for those movie IDs which did not have a tag associated with it
+### and the tf idf matrix from previous file is combined with this matrix
+
+#######################################
+
