@@ -1,0 +1,57 @@
+###################################################
+
+######### This file  combines the tags for a unique movie Id and then 
+
+######## creates a corpus where tags associated with each unique movie ID
+
+####### represents a document and then does a bag of words with TF-IDF
+
+####### and produces a matrix
+
+###### Removes sparse terms 
+
+##### final matrix produces is dtm1
+
+###################################################
+
+tags<-read.csv(file.choose())
+View(tags)
+attach(tags)
+
+
+
+movies<-read.csv(file.choose())
+View(movies)
+
+
+#####combining tags according to ids
+CombNames<-sapply(split(tag,movieId),paste, sep=" ")
+
+library(tm)
+require(Snowballc)
+
+corpus = Corpus(VectorSource(as.character(CombNames)))
+
+# Pre-process data
+
+corpus <- tm_map(corpus, removeWords, stopwords("english"))
+corpus <- tm_map(corpus, stripWhitespace)
+corpus <- tm_map(corpus, stemDocument)
+corpus<- tm_map(corpus, PlainTextDocument)
+
+#### Create the document term matrix
+### Using wieghting= WeighTfIdf
+###
+##  Create the matrix and use TF-IDF
+###
+dtm<-NULL
+dtm = DocumentTermMatrix(corpus,control=list(weighting=weightTfIdf))
+
+### After creating document term matrix using tf-idf we use remove sparse sloumns we set the sparse factor at 0.97 
+# i.e. the resultant matrix will contain the terms with values less than 0.97
+
+# Remove sparse terms
+dtm = removeSparseTerms(dtm, 0.97)
+
+### Write the matrix as a csv file
+write.csv(as.matrix(dtm),"D:/tags")
