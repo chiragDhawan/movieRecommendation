@@ -47,7 +47,7 @@ corpus<- tm_map(corpus, PlainTextDocument)
 dtm<-NULL
 dtm = DocumentTermMatrix(corpus,control=list(weighting=weightTfIdf))
 
-### After creating document term matrix using tf-idf we use remove sparse sloumns we set the sparse factor at 0.97 
+### After creating document term matrix using tf-idf we use remove sparse columns we set the sparse factor at 0.97 
 # i.e. the resultant matrix will contain the terms with values less than 0.97
 
 # Remove sparse terms
