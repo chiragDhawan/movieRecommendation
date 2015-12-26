@@ -1,0 +1,21 @@
+################
+#
+###### This file combines the 3 files of tags, genres and rates
+#
+##############
+
+#Opening the three files 
+tags<-read.csv(file.choose()) # This is the file tf-idf file with zeros added for the tags which did not have a tag associated with it
+genres<-read.csv(file.choose())  #This is the file with genres seperated as columns
+rates<-read.csv(file.choose()) #This is the average rating file
+
+# We only use those movies which have a rating associated with it
+gen<-genres[genres$movieId%in%rates$movieId,]  # getting only those rows for which the corresponding movie Id has an average Rating 
+tags_fin<-tags[tags$movieId%in%rates$movieId,] # Similary for the tags
+movieId<-rates$movieId
+
+# Creating a final dataframe combining the seperated generes, seperated tags and average Rating
+final<-data.frame(movieId,gen[,4:22],tags_fin[,2:45],rates[,2:3]) 
+
+# the final table will consist of Watch column which will be our predictor variable
+# We will do classification and predict whether a movie will have the Watch column as Yes, Maybe, No
