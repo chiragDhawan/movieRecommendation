@@ -1,0 +1,37 @@
+###########################
+
+###########  This file will take the average of each movies rating 
+##            It will add another column Watch whose value for each unique movie ID will be
+
+##
+#   Yes if the average rating is more than 3 and less than 5
+##
+#   No if the average rating is 2 or less than 2
+##
+#   Maybe if the average rating is more than 2 and less than 3
+
+ratings<-read.csv(file.choose()) # This will open the ratings file  
+movies<-read.csv(file.choose())  # This will open the movies file
+
+ratingMatrix<-ratings%>%                    # Using the dplyr package's piping operater to arrange the movies according to movieId
+  select(movieId,rating)%>%
+  arrange(movieId)
+
+## Here using the sqldf package to get the average rating grouped by the movie Id
+AvgRating<-sqldf('select movieId, avg(rating) as averageRating from ratingMatrix group by movieId') # useful package to use sql queries on the table
+
+
+############## Adding a new column watch will have 
+##
+#   Yes if the average rating is more than 3 and less than 5
+##
+#   No if the average rating is 2 or less than 2
+##
+#   Maybe if the average rating is more than 2 and less than 3
+
+AvgRating$WATCH<-ifelse((averageRating<=2),"NO",ifelse(averageRating<3 & averageRating>2,"Maybe","Yes"))
+
+
+
+
+
