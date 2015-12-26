@@ -3,6 +3,8 @@
 ########## This file will be used to data exploration 
 
 ##### Also classifiers will be used to make the model
+
+
 final1<-read.csv(file.choose())
 
 ###### boxplot of movieId vs averageRating
@@ -73,11 +75,12 @@ train<-final[sets,]  # Training set 75% of the data
 test<-final[-sets,]  # Testing set 25% of the data
 
 #####################################  GBM package #################
+
+### Using stochastic gradient boosting model
+
 forGBM<-NULL
 forGBM<-train
               
-forGBM$WATCH<-ifelse(forGBM$WATCH=='Yes',1,ifelse(forGBM$WATCH=='NO',-1,0)) #Converting the Watch to 1,-1,0 because it only accepts numerical values
-
 ####### Using train function to find the best parameters
 #using cross validation method to find the best parameters
 
@@ -94,13 +97,15 @@ gbmtune<- train(WATCH~. ,             ######## Predicting WATCH with every other
                 verbose=F,            # Keeping verbose = False so that we do net get the output of all the models tried
                 trControl=ctrl, 
                 tuneGrid=grid)
-
-fit_for<-gbm(forGBM[,c(1:63)],forGBM[,64],ntree=300)
+                
+#Getting train prediction and error with the best tune model gotten from above
+predictGBM<-predict(gbmtune,train[,c(1:63)])
+1-sum(test$WATCH==predictGBMT)/length(train$WATCH)
 
 # Getting the test prediction and error
-prTestGBM<-predict(fit_for,test[,1:63])
+predictGBMTest<-predict(gbmtune,test[,c(1:63)]) 
+1-sum(test$WATCH==predictGBMTest)/length(test$WATCH)
 
-ErrorTest<-1-sum(train$WATCH==prTest)/length(train$WATCH)
 
 ########################### Ordered Logistic regression
 
