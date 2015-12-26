@@ -4,4 +4,28 @@
 ### and the tf idf matrix from previous file is combined with this matrix
 
 #######################################
+# un contains the unique movie Id's of the tags
+un<-unique(tags$movieId)
 
+# diff contains the movie Id's  of those movies not present in the tags file 
+# As there are some movies which do not have a tag associated with them
+diff<-movies$movieId[ !movies$movieId %in% un]
+
+##################################
+mid_tag<-sort(unique(tags$movieId)) ##get the unique movie Ids from the tags file and sort it then store it into a mid_tag variable
+
+cher<-data.frame(movieId=mid_tag,dtm1) ## store the the dtm1 matrix obtained along with their respective movie Id and store as dataframe
+
+######### rbind the movie Ids not present in the tags file i.e diff
+####and giving their values as 0
+m<-length(diff)
+dtm2<-as.data.frame(dtm1)[m,]
+cheri<-NULL
+cheri<-data.frame(movieId=diff,dtm2) # creating a dataframe containing the diff movie Ids and giving the value 0
+che<-rbind(cher,cheri) ## row binding cher and cheri
+
+## Using the dplyr package to arrange the movieId in the che dataframe
+che<-che%>%        
+  arrange(movieId)
+
+write.table(che, "D:/dataMining", sep=",")
