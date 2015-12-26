@@ -1,0 +1,128 @@
+#########################################
+
+########## This file will be used to data exploration 
+
+##### Also classifiers will be used to make the model
+final1<-read.csv(file.choose())
+
+###### boxplot of movieId vs averageRating
+
+summary(final1) ###########shows the min max and quandrant values 
+
+ggplot(final1,aes(movieId,averageRating))+geom_boxplot()   ######shows that most 
+                                                          #of the movie ratings lies in the IQR
+
+IQR(final1$averageRating) ##### Inner Quartile Range {75% -25%} ====0.9166667
+
+###### Plots
+qplot(Adventure,Action,data=final)
+
+qplot(Mystery,Action,data=final)
+
+qplot(nuditi,topless,data=final)
+
+qplot(romanc,see,data=final1)
+
+qplot(book,base,data=final1)
+
+qplot(funni,Comedy,data=final1)
+
+qplot(bad,act,data=final1)
+
+cor(final1$nuditi,final1$topless)
+
+cor(final1$book,final1$base)
+
+cor(final1$bad,final1$act)
+
+colnames(final1)
+############## HISTOGRAMS
+
+plot1<-ggplot(final1)+geom_histogram(aes(Action,fill=WATCH)) ##### ACTION the genre
+
+plot1
+
+plot2<-ggplot(final1)+geom_histogram(aes(action,fill=WATCH)) ##### ACTION the tag
+
+plot2
+
+plot3<-ggplot(final1)+geom_histogram(aes(nuditi,fill=WATCH)) #####tag nudity
+
+plot3
+
+plot4<-ggplot(final1)+geom_histogram(aes(Crime,fill=WATCH))####### Crime genre
+
+plot4
+
+grid.arrange(plot1,plot2, nrow=1, ncol=2)
+
+###### removing average rating from the dataframe
+final<-final1[,c(2:64,66)]   # We remove the average rating and the movieID columns from the final matrix
+
+### Splitting
+# We set the seed so that we get the same split everytime
+set.seed(1234)
+
+# Using the caret package we split the dataset 
+
+sets<-createDataPartition(final$WATCH,p=0.75,list=F)
+############## split into train
+train<-final[sets,]  # Training set 75% of the data
+
+############# test
+test<-final[-sets,]  # Testing set 25% of the data
+
+#####################################  GBM package #################
+forGBM<-NULL
+forGBM<-train
+              
+forGBM$WATCH<-ifelse(forGBM$WATCH=='Yes',1,ifelse(forGBM$WATCH=='NO',-1,0)) #Converting the Watch to 1,-1,0 because it only accepts numerical values
+
+####### Using train function to find the best parameters
+#using cross validation method to find the best parameters
+
+ctrl<-trainControl(method="CV") # repeating 10 fold cross validation 5 times
+
+grid<-expand.grid(interaction.depth=seq(1,3,by=2),
+                  n.trees=seq(100,300,by=100),
+                  shrinkage=c(0.01,0.1),
+                  n.minobsinnode=10)
+
+gbmtune<- train(WATCH~. ,             ######## Predicting WATCH with every otherfeature 
+                data= forGBM, 
+                method="gbm",
+                verbose=F,            # Keeping verbose = False so that we do net get the output of all the models tried
+                trControl=ctrl, 
+                tuneGrid=grid)
+
+fit_for<-gbm(forGBM[,c(1:63)],forGBM[,64],ntree=300)
+
+# Getting the test prediction and error
+prTestGBM<-predict(fit_for,test[,1:63])
+
+ErrorTest<-1-sum(train$WATCH==prTest)/length(train$WATCH)
+
+########################### Ordered Logistic regression
+
+fit<-polr(WATCH~., data=train, Hess=T) #Logistic Regression using the second order derivative method of gradient descent using Hessian
+pr<-predict(fit,test[,1:63],type="probs")
+exp(cbind(OR=coef(fit),confint(fit)))
+# This is to interpret the result of the fit in the confidence interval
+
+#### For example the following is an interpretation
+# Animation does not contain a 1 in the confidence interval so it is significant
+# Interpretation: if there is a unit increase in animation i.e from 0 to 1 
+## the odds of watch of the movies from Maybe and NO to Yes increases by 2.24 times
+
+coef(summary(fit))
+
+# Getting the train prediction and error
+prTrain<-predict(fit,train[,1:63])
+ErrorTrain<-1-sum(test$WATCH==pr1)/length(test$WATCH)
+
+# Getting the test prediction and error
+prTest<-predict(fit,test[,1:63])
+ErrorTest<-1-sum(train$WATCH==prTest)/length(train$WATCH)
+
+
+
