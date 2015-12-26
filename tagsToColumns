@@ -10,8 +10,6 @@
 
 ###### Removes sparse terms 
 
-##### final matrix produces is dtm1
-
 ###################################################
 
 tags<-read.csv(file.choose())
